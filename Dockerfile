@@ -23,6 +23,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
   php5-imap \
   php5-gd \
   php5-curl \
+  php5-ldap \
   php5-mysql && \
   rm -rf /var/lib/apt/lists/*
 
@@ -42,6 +43,9 @@ RUN wget -nv -O upload/include/i18n/fr.phar http://osticket.com/sites/default/fi
     wget -nv -O upload/include/i18n/it.phar http://osticket.com/sites/default/files/download/lang/it.phar && \
     wget -nv -O upload/include/i18n/es_ES.phar http://osticket.com/sites/default/files/download/lang/es_ES.phar && \
     wget -nv -O upload/include/i18n/de.phar http://osticket.com/sites/default/files/download/lang/de.phar
+
+# Download LDAP plugin
+RUN wget -nv -O upload/include/plugins/auth-ldap.phar http://osticket.com/sites/default/files/download/plugin/auth-ldap.phar
 
 # Configure nginx
 RUN sed -i -e"s/keepalive_timeout\s*65/keepalive_timeout 2/" /etc/nginx/nginx.conf && \
