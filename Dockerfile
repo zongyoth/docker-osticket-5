@@ -37,14 +37,15 @@ RUN wget -nv -O osTicket.zip http://osticket.com/sites/default/files/download/os
     mv /data/upload/setup /data/upload/setup_hidden && \
     chown -R root:root /data/upload/setup_hidden && \
     chmod 700 /data/upload/setup_hidden
-    
+
 # Download languages packs
 RUN wget -nv -O upload/include/i18n/fr.phar http://osticket.com/sites/default/files/download/lang/fr.phar && \
     wget -nv -O upload/include/i18n/ar.phar http://osticket.com/sites/default/files/download/lang/ar.phar && \
     wget -nv -O upload/include/i18n/pt_BR.phar http://osticket.com/sites/default/files/download/lang/pt_BR.phar && \
     wget -nv -O upload/include/i18n/it.phar http://osticket.com/sites/default/files/download/lang/it.phar && \
     wget -nv -O upload/include/i18n/es_ES.phar http://osticket.com/sites/default/files/download/lang/es_ES.phar && \
-    wget -nv -O upload/include/i18n/de.phar http://osticket.com/sites/default/files/download/lang/de.phar
+    wget -nv -O upload/include/i18n/de.phar http://osticket.com/sites/default/files/download/lang/de.phar && \
+    mv upload/include/i18n upload/include/i18n.dist
 
 # Download LDAP plugin
 RUN wget -nv -O upload/include/plugins/auth-ldap.phar http://osticket.com/sites/default/files/download/plugin/auth-ldap.phar
@@ -73,6 +74,6 @@ ADD supervisord.conf /data/supervisord.conf
 ADD msmtp.conf /data/msmtp.conf
 ADD bin/ /data/bin
 
-VOLUME ["/data/upload/include/plugins","/var/log/nginx"]
+VOLUME ["/data/upload/include/plugins","/data/upload/include/i18n","/var/log/nginx"]
 EXPOSE 80
 CMD ["/data/bin/start.sh"]
