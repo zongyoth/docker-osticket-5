@@ -144,13 +144,18 @@ specified in the admin control panel, you need to specify both to the value you'
 
 # Volumes
 
-This image currently supports two volumes. None of these need to used if you do not require them.
+This image currently supports three volumes. None of these need to used if you do not require them.
 
 `/data/upload/include/plugins`
 
 This is the location where any OSTicket plugins, like [the core plugins](https://github.com/osTicket/core-plugins),
 can be placed. Plugins are not included in this image and hence should be maintained in a separate linked Docker
 container or the host filesystem.
+
+`/data/upload/include/i18n`
+
+This is the location where language packs can be added. There are several languages included in this image.
+If you want to add / change them, you can use this volume.
 
 `/var/log/nginx`
 
