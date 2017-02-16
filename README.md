@@ -3,21 +3,21 @@ docker-osticket
 
 # Introduction
 
-Docker image for running version 1.9.14 of [OSTicket](http://osticket.com/).
+Docker image for running version 1.10 of [OSTicket](http://osticket.com/).
 
 This image has been created from the original docker-osticket image by [Petter A. Helset](mailto:petter@helset.eu).
 
 It has a few modifications:
 
   * Documentation added, hurray!
-  * Base OS image fixed to Ubuntu 14.04
+  * Base OS image fixed to Alpine Linux
   * AJAX issues fixed that made original image unusable
   * Now designed to work with a linked [MySQL](https://registry.hub.docker.com/u/library/mysql/) docker container.
   * Automates configuration file & database installation
   * EMail support 
 
-OSTicket is being served by [nginx](http://wiki.nginx.org/Main) using [PHP-FPM](http://php-fpm.org/) with PHP5. 
-PHP5's [mail](http://php.net/manual/en/function.mail.php) function is configured to use [msmtp](http://msmtp.sourceforge.net/) to send out-going messages.
+OSTicket is being served by [nginx](http://wiki.nginx.org/Main) using [PHP-FPM](http://php-fpm.org/) with PHP7. 
+PHP7's [mail](http://php.net/manual/en/function.mail.php) function is configured to use [msmtp](http://msmtp.sourceforge.net/) to send out-going messages.
 
 The `setup/` directory has been renamed as `setup_hidden/` and the file system permissions deny nginx access to this
 location. It was not removed as the setup files are required as part of the automatic configuration during container
@@ -37,13 +37,16 @@ Now run this image and link the MySQL container.
 docker run --name osticket -d --link osticket_mysql:mysql -p 8080:80 campbellsoftwaresolutions/osticket
 ```
 
-Wait for the installation to complete then browse to your OSTicket staff control panel at `http://localhost:8080/scp`. Login with default admin user & password:
+Wait for the installation to complete then browse to your OSTicket staff control panel at `http://localhost:8080/scp/`. Login with default admin user & password:
 
 * username: **ostadmin**
 * password: **Admin1**
 
 Now configure as required. If you are intending on using this image in production, please make sure you change the
 passwords above and read the rest of this documentation!
+
+Note: OSTicket automatically redirects `http://localhost:8080/scp` to `http://localhost/scp/`. Either serve this on port 80 or don't omit the
+trailing slash after `scp/`!
 
 # MySQL connection
 
