@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM php:7.0-fpm-alpine
 MAINTAINER Martin Campbell <martin@campbellsoftware.co.uk>
 
 # setup workdir
@@ -9,23 +9,28 @@ WORKDIR /data
 ENV OSTICKET_VERSION 1.10
 ENV HOME /data
 
-# requirements
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
-  nano \
-  wget \
-  unzip \
-  msmtp \
-  ca-certificates \
-  supervisor \
-  nginx \
-  php5-cli \
-  php5-fpm \
-  php5-imap \
-  php5-gd \
-  php5-curl \
-  php5-ldap \
-  php5-mysql && \
-  rm -rf /var/lib/apt/lists/*
+# requirements and PHP extensions
+RUN apk add --update \
+    wget \
+    unzip \
+    msmtp \
+    ca-certificates \
+    supervisor \
+    nginx \
+    libpng \
+    c-client \
+    openldap \
+    libintl \
+    libxml2 \
+    icu \
+    openssl && \
+    apk add imap-dev libpng-dev curl-dev openldap-dev gettext-dev libxml2-dev icu-dev autoconf g++ make && \
+    docker-php-ext-install gd curl ldap mysqli sockets gettext mbstring xml intl opcache && \
+    docker-php-ext-configure imap --with-imap-ssl && \
+    docker-php-ext-install imap && \
+    pecl install apcu && docker-php-ext-enable apcu && \
+    apk del imap-dev libpng-dev curl-dev openldap-dev gettext-dev libxml2-dev icu-dev autoconf g++ make && \
+    rm -rf /var/cache/apk/*
 
 # Download & install OSTicket
 RUN wget -nv -O osTicket.zip http://osticket.com/sites/default/files/download/osTicket-v${OSTICKET_VERSION}.zip && \
@@ -50,29 +55,16 @@ RUN wget -nv -O upload/include/i18n/fr.phar http://osticket.com/sites/default/fi
 # Download LDAP plugin
 RUN wget -nv -O upload/include/plugins/auth-ldap.phar http://osticket.com/sites/default/files/download/plugin/auth-ldap.phar
 
-# Configure nginx
-RUN sed -i -e"s/keepalive_timeout\s*65/keepalive_timeout 2/" /etc/nginx/nginx.conf && \
-    sed -i -e"s/keepalive_timeout 2/keepalive_timeout 2;\n\tclient_max_body_size 100m/" /etc/nginx/nginx.conf && \
-    echo "daemon off;" >> /etc/nginx/nginx.conf
-
-# Configure php-fpm & PHP5
-RUN sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php5/fpm/php.ini && \
-    sed -i -e "s/upload_max_filesize\s*=\s*2M/upload_max_filesize = 100M/g" /etc/php5/fpm/php.ini && \
-    sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = 100M/g" /etc/php5/fpm/php.ini && \
-    sed -i -e 's#;sendmail_path\s*=\s*#sendmail_path = "/usr/bin/msmtp -C /etc/msmtp -t "#g' /etc/php5/fpm/php.ini && \
-    sed -i -e "s/;daemonize\s*=\s*yes/daemonize = no/g" /etc/php5/fpm/php-fpm.conf && \
-    sed -i -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" /etc/php5/fpm/pool.d/www.conf && \
-    php5enmod imap
-
-# Configure msmtp log file permissions
+# Configure nginx, PHP, msmtp and supervisor
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY php-osticket.ini $PHP_INI_DIR/conf.d/
 RUN touch /var/log/msmtp.log && \
     chown www-data:www-data /var/log/msmtp.log
+COPY supervisord.conf /data/supervisord.conf
+COPY msmtp.conf /data/msmtp.conf
+COPY php.ini $PHP_INI_DIR/php.ini
 
-# Add nginx site
-ADD virtualhost /etc/nginx/sites-available/default
-ADD supervisord.conf /data/supervisord.conf
-ADD msmtp.conf /data/msmtp.conf
-ADD bin/ /data/bin
+COPY bin/ /data/bin
 
 VOLUME ["/data/upload/include/plugins","/data/upload/include/i18n","/var/log/nginx"]
 EXPOSE 80
