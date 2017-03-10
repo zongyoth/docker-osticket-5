@@ -86,12 +86,12 @@ if (!file_put_contents(MAIL_CONFIG_FILE, $mailConfig) || !chown(MAIL_CONFIG_FILE
 }
 
 //Cron interval - enable or disable
-define('CRON_JOB_FILE','/etc/cron.d/osticket');
+define('CRON_JOB_FILE','/var/spool/cron/crontabs/www-data');
 
 $interval = (int)$vars['cron_interval'];
 if ($interval > 0) {
   echo "OSTicket cron job is set to run every {$interval} minutes\n";
-  $cron = "*/{$interval} * * * * www-data /usr/bin/php -c /etc/php5/fpm/php.ini /data/upload/api/cron.php\n";
+  $cron = "*/{$interval} * * * * /usr/local/bin/php -c /usr/local/etc/php/php.ini /data/upload/api/cron.php\n";
   file_put_contents(CRON_JOB_FILE, $cron);
 } else {
   echo "OSTicket cron job is disabled\n";
