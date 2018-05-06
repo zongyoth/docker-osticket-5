@@ -25,10 +25,10 @@ start.
 
 # Quick Start
 
-Ensure you have a MySQL container running that OSTicket can use to store its data.
+Ensure you have a MySQL 5 container running that OSTicket can use to store its data.
 
 ```bash
-docker run --name osticket_mysql -d -e MYSQL_ROOT_PASSWORD=secret -e MYSQL_USER=osticket -e MYSQL_PASSWORD=secret -e MYSQL_DATABASE=osticket mysql
+docker run --name osticket_mysql -d -e MYSQL_ROOT_PASSWORD=secret -e MYSQL_USER=osticket -e MYSQL_PASSWORD=secret -e MYSQL_DATABASE=osticket mysql:5
 ```
 
 Now run this image and link the MySQL container.
