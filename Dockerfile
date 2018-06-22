@@ -1,18 +1,27 @@
+# Deployment doesn't work on Alpine
+FROM php:7.0-cli AS deployer
+ENV OSTICKET_VERSION=1.10.3
+RUN set -x \
+    && apt-get update \
+    && apt-get install -y git-core \
+    && git clone -b v${OSTICKET_VERSION} --depth 1 https://github.com/osTicket/osTicket.git \
+    && cd osTicket \
+    && php manage.php deploy -sv /data/upload \
+    && mv /data/upload/setup /data/setup \
+    && chmod -R go= /data/setup
+
 FROM php:7.0-fpm-alpine
 MAINTAINER Martin Campbell <martin@campbellsoftware.co.uk>
-
 # environment for osticket
-ENV HOME=/data \
-    OSTICKET_VERSION=1.10.2
-
+ENV HOME=/data
 # setup workdir
 WORKDIR /data
-
+COPY --chown=www-data:www-data --from=deployer /data/upload upload
+COPY --from=deployer /data/setup upload/setup_hidden
 RUN set -x && \
     # requirements and PHP extensions
     apk add --no-cache --update \
         wget \
-        unzip \
         msmtp \
         ca-certificates \
         supervisor \
@@ -42,16 +51,6 @@ RUN set -x && \
     pecl install apcu && docker-php-ext-enable apcu && \
     apk del .build-deps && \
     rm -rf /var/cache/apk/* && \
-    # Download & install OSTicket
-    wget -nv -O osTicket.zip https://github.com/osTicket/osTicket/releases/download/v${OSTICKET_VERSION}/osTicket-v${OSTICKET_VERSION}.zip && \
-    unzip osTicket.zip && \
-    rm osTicket.zip && \
-    chown -R www-data:www-data /data/upload/ && \
-    chmod -R a+rX /data/upload/ /data/scripts/ && \
-    chmod -R u+rw /data/upload/ /data/scripts/ && \
-    mv /data/upload/setup /data/upload/setup_hidden && \
-    chown -R root:root /data/upload/setup_hidden && \
-    chmod 700 /data/upload/setup_hidden && \
     # Download languages packs
     wget -nv -O upload/include/i18n/fr.phar http://osticket.com/sites/default/files/download/lang/fr.phar && \
     wget -nv -O upload/include/i18n/ar.phar http://osticket.com/sites/default/files/download/lang/ar.phar && \
@@ -65,9 +64,7 @@ RUN set -x && \
     # Create msmtp log
     touch /var/log/msmtp.log && \
     chown www-data:www-data /var/log/msmtp.log
-
 COPY files/ /
-
 VOLUME ["/data/upload/include/plugins","/data/upload/include/i18n","/var/log/nginx"]
 EXPOSE 80
 CMD ["/data/bin/start.sh"]
