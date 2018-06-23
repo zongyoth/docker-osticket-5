@@ -3,7 +3,7 @@ MAINTAINER Martin Campbell <martin@campbellsoftware.co.uk>
 
 # environment for osticket
 ENV HOME=/data \
-    OSTICKET_VERSION=1.10.1
+    OSTICKET_VERSION=1.10.2
 
 # setup workdir
 WORKDIR /data
@@ -43,7 +43,7 @@ RUN set -x && \
     apk del .build-deps && \
     rm -rf /var/cache/apk/* && \
     # Download & install OSTicket
-    wget -nv -O osTicket.zip http://osticket.com/sites/default/files/download/osTicket-v${OSTICKET_VERSION}.zip && \
+    wget -nv -O osTicket.zip https://github.com/osTicket/osTicket/releases/download/v${OSTICKET_VERSION}/osTicket-v${OSTICKET_VERSION}.zip && \
     unzip osTicket.zip && \
     rm osTicket.zip && \
     chown -R www-data:www-data /data/upload/ && \
