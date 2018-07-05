@@ -8,7 +8,9 @@ RUN set -x \
     && cd osTicket \
     && php manage.php deploy -sv /data/upload \
     && mv /data/upload/setup /data/setup \
-    && chmod -R go= /data/setup
+    && chmod -R go= /data/setup \
+    # www-data is uid:gid 82:82 in php:7.0-fpm-alpine
+    && chown -R 82:82 /data/upload
 
 FROM php:7.0-fpm-alpine
 MAINTAINER Martin Campbell <martin@campbellsoftware.co.uk>
@@ -16,7 +18,7 @@ MAINTAINER Martin Campbell <martin@campbellsoftware.co.uk>
 ENV HOME=/data
 # setup workdir
 WORKDIR /data
-COPY --chown=www-data:www-data --from=deployer /data/upload upload
+COPY --from=deployer /data/upload upload
 COPY --from=deployer /data/setup upload/setup_hidden
 RUN set -x && \
     # requirements and PHP extensions
