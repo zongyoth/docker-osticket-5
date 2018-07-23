@@ -192,6 +192,15 @@ If not specified, the default OSTicket sample configuration file is used.
 Helpdesk email account. This is placed in the configuration file as well as the DB during installation.
 Defaults to 'helpdesk@example.com'
 
+`INSTALL_URL`
+
+The full URL of the OST ticket installation that will be set in the DB during installation. 
+This should be set to match the public facing URL of your OSTicket site. 
+For example: `https://help.example.com/osticket`. Defaults to `http://localhost:8080/`.
+
+This has no effect if the database has already been installed. In this case, you should change the Helpdesk URL in 
+*System Settings and Preferences* in the admin control panel.
+
 ## Database Installation Only
 
 The remaining environmental variables can be used as a convenience to provide defaults during the automated database
