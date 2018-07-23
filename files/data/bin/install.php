@@ -109,7 +109,7 @@ define('OSTICKET_CONFIGFILE','/data/upload/include/ost-config.php');
 $installer = new Installer(OSTICKET_CONFIGFILE); //Installer instance.
 
 //Determine if using linked container
-$linked = (boolean)getenv("MYSQL_PORT");
+$linked = (boolean)getenv("MYSQL_ENV_MYSQL_PASSWORD");
 
 if (!$linked) {
   echo "Using external MySQL connection\n";
