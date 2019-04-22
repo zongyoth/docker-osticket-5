@@ -19,6 +19,7 @@ $vars = array(
 
   'prefix'   => getenv("MYSQL_PREFIX")              ?: 'ost_',
   'dbhost'   => getenv("MYSQL_HOST")                ?: 'mysql',
+  'dbport'   => getenv("MYSQL_PORT")                ?: 3306,
   'dbname'   => getenv("MYSQL_DATABASE")            ?: 'osticket',
   'dbuser'   => getenv("MYSQL_USER")                ?: 'osticket',
   'dbpass'   => getenv("MYSQL_PASSWORD")            ?: getenv("MYSQL_ENV_MYSQL_PASSWORD"),
@@ -112,8 +113,6 @@ $installer = new Installer(OSTICKET_CONFIGFILE); //Installer instance.
 $linked = (boolean)getenv("MYSQL_ENV_MYSQL_PASSWORD");
 
 if (!$linked) {
-  echo "Using external MySQL connection\n";
-
   //Check mandatory connection settings provided
   if (!getenv("MYSQL_HOST")) {
     err('Missing required environmental variable MYSQL_HOST');
@@ -121,15 +120,20 @@ if (!$linked) {
   if (!getenv("MYSQL_PASSWORD")) {
     err('Missing required environmental variable: MYSQL_PASSWORD');
   }
+
+  echo "Connecting to external MySQL server on ${vars['dbhost']}:${vars['dbport']}\n";
 } else {
   echo "Using linked MySQL container\n";
+
+  # MYSQL_PORT is a TCP uri injected by container linking. Use port specified in MYSQL_PORT_3306_TCP_PORT.
+  $vars['dbport'] = getenv("MYSQL_PORT_3306_TCP_PORT");
 }
 
 //Wait for database connection
 echo "Waiting for database TCP connection to become available...\n";
 $s = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 $t = 0;
-while (!@socket_connect($s,$vars['dbhost'],3306) && $t < CONNECTION_TIMEOUT_SEC) {
+while (!@socket_connect($s,$vars['dbhost'],$vars['dbport']) && $t < CONNECTION_TIMEOUT_SEC) {
   $t++;
   if (($t % 15) == 0) {
     echo "Waited for $t seconds...\n";

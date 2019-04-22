@@ -78,6 +78,11 @@ The following environmental variables should be set when connecting to an extern
 The host name or IP address of the MySQL host to connect to. This is not required when you link a container
 with the alias `mysql`. This must be provided if not using a linked container.
 
+`MYSQL_PORT`
+
+The TCP port number to connect to on the MySQL host. This is only required if you are not using a linked container
+and also are not using the default MySQL port on your server (3306).
+
 `MYSQL_PASSWORD`
 
 The password for the specified user used when connecting to the MySQL server. By default will use the environmental variable
