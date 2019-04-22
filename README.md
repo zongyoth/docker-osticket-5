@@ -16,7 +16,7 @@ It has a few modifications:
   * Automates configuration file & database installation
   * EMail support
 
-OSTicket is being served by [nginx](http://wiki.nginx.org/Main) using [PHP-FPM](http://php-fpm.org/) with PHP7.
+OSTicket is being served by [nginx](http://wiki.nginx.org/Main) using [PHP-FPM](http://php-fpm.org/) with PHP 7.2.
 PHP7's [mail](http://php.net/manual/en/function.mail.php) function is configured to use [msmtp](http://msmtp.sourceforge.net/) to send out-going messages.
 
 The `setup/` directory has been renamed as `setup_hidden/` and the file system permissions deny nginx access to this
@@ -25,7 +25,7 @@ start.
 
 # Quick Start
 
-Ensure you have a MySQL 5 container running that OSTicket can use to store its data.
+Ensure you have a MySQL 5+ container running that OSTicket can use to store its data.
 
 ```bash
 docker run --name osticket_mysql -d -e MYSQL_ROOT_PASSWORD=secret -e MYSQL_USER=osticket -e MYSQL_PASSWORD=secret -e MYSQL_DATABASE=osticket mysql:5
