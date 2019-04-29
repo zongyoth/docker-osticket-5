@@ -120,6 +120,10 @@ if (!$linked) {
   if (!getenv("MYSQL_PASSWORD")) {
     err('Missing required environmental variable: MYSQL_PASSWORD');
   }
+  if (getenv("MYSQL_PORT")) {
+    // Setting mysqli.default_port for osTicket db_connect
+    ini_set('mysqli.default_port', $vars['dbport']);
+  }
 
   echo "Connecting to external MySQL server on ${vars['dbhost']}:${vars['dbport']}\n";
 } else {
@@ -186,7 +190,7 @@ if (!$configFile = file_get_contents($vars['config'])) {
 };
 $configFile= str_replace("define('OSTINSTALLED',FALSE);","define('OSTINSTALLED',TRUE);",$configFile);
 $configFile= str_replace('%ADMIN-EMAIL',$vars['admin_email'],$configFile);
-$configFile= str_replace('%CONFIG-DBHOST',$vars['dbhost'],$configFile);
+$configFile= str_replace('%CONFIG-DBHOST',$vars['dbhost'] . ':' . $vars['dbport'],$configFile);
 $configFile= str_replace('%CONFIG-DBNAME',$vars['dbname'],$configFile);
 $configFile= str_replace('%CONFIG-DBUSER',$vars['dbuser'],$configFile);
 $configFile= str_replace('%CONFIG-DBPASS',$vars['dbpass'],$configFile);
