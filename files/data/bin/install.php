@@ -120,10 +120,9 @@ if (!$linked) {
   if (!getenv("MYSQL_PASSWORD")) {
     err('Missing required environmental variable: MYSQL_PASSWORD');
   }
-  if (getenv("MYSQL_PORT")) {
-    // Setting mysqli.default_port for osTicket db_connect
-    ini_set('mysqli.default_port', $vars['dbport']);
-  }
+
+  // Always set mysqli.default_port for osTicket db_connect
+  ini_set('mysqli.default_port', $vars['dbport']);
 
   echo "Connecting to external MySQL server on ${vars['dbhost']}:${vars['dbport']}\n";
 } else {
