@@ -48,7 +48,7 @@ passwords above and read the rest of this documentation!
 Note (1): If you want to change the environmental database variables on the OSTicket image to run, you can do it as follows.
 
 ```bash
-docker run --name osticket -d MYSQL_ROOT_PASSWORD=new_root_password -e MYSQL_USER=new_root_user -e MYSQL_PASSWORD=new_secret -e MYSQL_DATABASE=osticket --link osticket_mysql:mysql -p 8080:80 campbellsoftwaresolutions/osticket
+docker run --name osticket -d -e MYSQL_ROOT_PASSWORD=new_root_password -e MYSQL_USER=new_root_user -e MYSQL_PASSWORD=new_secret -e MYSQL_DATABASE=osticket --link osticket_mysql:mysql -p 8080:80 campbellsoftwaresolutions/osticket
 ```
 
 Note (2): OSTicket automatically redirects `http://localhost:8080/scp` to `http://localhost/scp/`. Either serve this on port 80 or don't omit the
