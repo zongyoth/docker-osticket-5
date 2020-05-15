@@ -68,6 +68,7 @@ RUN set -x && \
     touch /var/log/msmtp.log && \
     chown www-data:www-data /var/log/msmtp.log && \
     # File upload permissions
+    mkdir -p /var/tmp/nginx && \
     chown nginx:www-data /var/tmp/nginx && chmod g+rx /var/tmp/nginx
 COPY files/ /
 VOLUME ["/data/upload/include/plugins","/data/upload/include/i18n","/var/log/nginx"]
