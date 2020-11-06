@@ -34,8 +34,10 @@ RUN set -x && \
         openldap \
         libintl \
         libxml2 \
+        libzip \
         icu \
-        openssl && \
+        openssl \
+        git && \
     apk add --no-cache --virtual .build-deps \
         imap-dev \
         libpng-dev \
@@ -43,12 +45,14 @@ RUN set -x && \
         openldap-dev \
         gettext-dev \
         libxml2-dev \
+        libzip-dev \
         icu-dev \
         autoconf \
         g++ \
         make \
-        pcre-dev && \
-    docker-php-ext-install gd curl ldap mysqli sockets gettext mbstring xml intl opcache && \
+        pcre-dev \
+        git && \
+    docker-php-ext-install gd curl ldap mysqli sockets gettext mbstring xml intl opcache zip && \
     docker-php-ext-configure imap --with-imap-ssl && \
     docker-php-ext-install imap && \
     pecl install apcu && docker-php-ext-enable apcu && \
@@ -114,12 +118,39 @@ RUN set -x && \
     wget -nv -O upload/include/i18n/ur_PK.phar https://s3.amazonaws.com/downloads.osticket.com/lang/1.14.x/ur_PK.phar && \
     wget -nv -O upload/include/i18n/vi.phar https://s3.amazonaws.com/downloads.osticket.com/lang/1.14.x/vi.phar && \
     mv upload/include/i18n upload/include/i18n.dist && \
-    # Download plugins
+    # Download official plugins
     wget -nv -O upload/include/plugins/auth-ldap.phar https://s3.amazonaws.com/downloads.osticket.com/plugin/auth-ldap.phar && \
     wget -nv -O upload/include/plugins/auth-passthru.phar https://s3.amazonaws.com/downloads.osticket.com/plugin/auth-passthru.phar && \
     wget -nv -O upload/include/plugins/storage-fs.phar https://s3.amazonaws.com/downloads.osticket.com/plugin/storage-fs.phar && \
     wget -nv -O upload/include/plugins/storage-s3.phar https://s3.amazonaws.com/downloads.osticket.com/plugin/storage-s3.phar && \
     wget -nv -O upload/include/plugins/audit.phar https://s3.amazonaws.com/downloads.osticket.com/plugin/audit.phar && \
+    
+    # Download community plugins
+    ## Archiver
+    git clone https://github.com/clonemeagain/osticket-plugin-archiver upload/include/plugins/archiver && \
+    ## Attachment Preview
+    git clone https://github.com/clonemeagain/attachment_preview upload/include/plugins/attachment-preview && \
+    ## Auto Closer
+    git clone https://github.com/clonemeagain/plugin-autocloser upload/include/plugins/auto-closer && \
+    ## Fetch Note
+    git clone https://github.com/bkonetzny/osticket-fetch-note upload/include/plugins/fetch-note && \
+    ## Field Radio Buttons
+    git clone https://github.com/Micke1101/OSTicket-plugin-field-radiobuttons upload/include/plugins/field-radiobuttons && \
+    ## Mentioner
+    git clone https://github.com/clonemeagain/osticket-plugin-mentioner upload/include/plugins/mentioner && \
+    ## Multi LDAP Auth
+    git clone https://github.com/philbertphotos/osticket-multildap-auth upload/include/plugins/multi-ldap && \
+    mv upload/include/plugins/multi-ldap/multi-ldap/* upload/include/plugins/multi-ldap/ && \
+    rm -rf upload/include/plugins/multi-ldap/multi-ldap && \
+    ## Prevent Autoscroll
+    git clone https://github.com/clonemeagain/osticket-plugin-preventautoscroll upload/include/plugins/prevent-autoscroll && \
+    ## Rewriter
+    git clone https://github.com/clonemeagain/plugin-fwd-rewriter upload/include/plugins/rewriter && \
+    ## Slack
+    git clone https://github.com/clonemeagain/osticket-slack upload/include/plugins/slack && \
+    ## Teams (Microsoft)
+    git clone https://github.com/ipavlovi/osTicket-Microsoft-Teams-plugin upload/include/plugins/teams && \
+    
     # Create msmtp log
     touch /var/log/msmtp.log && \
     chown www-data:www-data /var/log/msmtp.log && \
