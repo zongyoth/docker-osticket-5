@@ -55,15 +55,19 @@ RUN set -x && \
     apk del .build-deps && \
     rm -rf /var/cache/apk/* && \
     # Download languages packs
-    wget -nv -O upload/include/i18n/fr.phar https://s3.amazonaws.com/downloads.osticket.com/lang/fr.phar && \
-    wget -nv -O upload/include/i18n/ar.phar https://s3.amazonaws.com/downloads.osticket.com/lang/ar.phar && \
-    wget -nv -O upload/include/i18n/pt_BR.phar https://s3.amazonaws.com/downloads.osticket.com/lang/pt_BR.phar && \
-    wget -nv -O upload/include/i18n/it.phar https://s3.amazonaws.com/downloads.osticket.com/lang/it.phar && \
-    wget -nv -O upload/include/i18n/es_ES.phar https://s3.amazonaws.com/downloads.osticket.com/lang/es_ES.phar && \
-    wget -nv -O upload/include/i18n/de.phar https://s3.amazonaws.com/downloads.osticket.com/lang/de.phar && \
+    wget -nv -O upload/include/i18n/fr.phar https://s3.amazonaws.com/downloads.osticket.com/lang/1.14.x/fr.phar && \
+    wget -nv -O upload/include/i18n/ar.phar https://s3.amazonaws.com/downloads.osticket.com/lang/1.14.x/ar.phar && \
+    wget -nv -O upload/include/i18n/pt_BR.phar https://s3.amazonaws.com/downloads.osticket.com/lang/1.14.x/pt_BR.phar && \
+    wget -nv -O upload/include/i18n/it.phar https://s3.amazonaws.com/downloads.osticket.com/lang/1.14.x/it.phar && \
+    wget -nv -O upload/include/i18n/es_ES.phar https://s3.amazonaws.com/downloads.osticket.com/lang/1.14.x/es_ES.phar && \
+    wget -nv -O upload/include/i18n/de.phar https://s3.amazonaws.com/downloads.osticket.com/lang/1.14.x/de.phar && \
     mv upload/include/i18n upload/include/i18n.dist && \
-    # Download LDAP plugin
+    # Download plugins
     wget -nv -O upload/include/plugins/auth-ldap.phar https://s3.amazonaws.com/downloads.osticket.com/plugin/auth-ldap.phar && \
+    wget -nv -O upload/include/plugins/auth-ldap.phar https://s3.amazonaws.com/downloads.osticket.com/plugin/auth-passthru.phar && \
+    wget -nv -O upload/include/plugins/auth-ldap.phar https://s3.amazonaws.com/downloads.osticket.com/plugin/storage-fs.phar && \
+    wget -nv -O upload/include/plugins/auth-ldap.phar https://s3.amazonaws.com/downloads.osticket.com/plugin/storage-s3.phar && \
+    wget -nv -O upload/include/plugins/auth-ldap.phar https://s3.amazonaws.com/downloads.osticket.com/plugin/audit.phar && \
     # Create msmtp log
     touch /var/log/msmtp.log && \
     chown www-data:www-data /var/log/msmtp.log && \
@@ -71,6 +75,7 @@ RUN set -x && \
     mkdir -p /var/tmp/nginx && \
     chown nginx:www-data /var/tmp/nginx && chmod g+rx /var/tmp/nginx
 COPY files/ /
+RUN chmod +x /data/bin/start.sh
 VOLUME ["/data/upload/include/plugins","/data/upload/include/i18n","/var/log/nginx"]
 EXPOSE 80
 CMD ["/data/bin/start.sh"]
