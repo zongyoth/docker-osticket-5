@@ -209,7 +209,7 @@ This has no effect if the database has already been installed. In this case, you
 
 `LANGUAGE`
 
-Set the system language. Defaults to `en_US`. Choose one following language codes.
+Set the system language. Choose one of the following language codes. Default is `en_US`.
 
 `bg` `cd` `en_GB` `es_MX` `fi` `hi` `is` `km` `lv` `nl` `ro` `sq` `sw` `ur_IN` `zh_CN` `ar` `bn` `da` `en_US` `et` `fr` 
 `hr` `it` `ko` `mk` `no` `ru` `sr` `th` `ur_PK` `zh_TW` `ar_EG` `bs` `de` `es_AR` `eu` `gl` `hu` `ja` `mn` `pl` `sk` 
