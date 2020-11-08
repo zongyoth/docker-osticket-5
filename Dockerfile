@@ -1,26 +1,9 @@
-# Deployment doesn't work on Alpine
-FROM php:7.3-cli AS deployer
-ENV OSTICKET_VERSION=1.14.3
-RUN set -x \
-    && apt-get update \
-    && apt-get install -y git-core \
-    && git clone -b v${OSTICKET_VERSION} --depth 1 https://github.com/osTicket/osTicket.git \
-    && cd osTicket \
-    && php manage.php deploy -sv /data/upload \
-    # www-data is uid:gid 82:82 in php:7.0-fpm-alpine
-    && chown -R 82:82 /data/upload \
-    # Hide setup
-    && mv /data/upload/setup /data/upload/setup_hidden \
-    && chown -R root:root /data/upload/setup_hidden \
-    && chmod -R go= /data/upload/setup_hidden
-
 FROM php:7.3-fpm-alpine
 MAINTAINER Martin Campbell <martin@campbellsoftware.co.uk>
 # environment for osticket
+ENV OSTICKET_VERSION=1.14.3
 ENV HOME=/data
-# setup workdir
 WORKDIR /data
-COPY --from=deployer /data/upload upload
 RUN set -x && \
     # requirements and PHP extensions
     apk add --no-cache --update \
@@ -36,8 +19,7 @@ RUN set -x && \
         libxml2 \
         libzip \
         icu \
-        openssl \
-        git && \
+        openssl && \
     apk add --no-cache --virtual .build-deps \
         imap-dev \
         libpng-dev \
@@ -56,8 +38,17 @@ RUN set -x && \
     docker-php-ext-configure imap --with-imap-ssl && \
     docker-php-ext-install imap && \
     pecl install apcu && docker-php-ext-enable apcu && \
-    apk del .build-deps && \
-    rm -rf /var/cache/apk/* && \
+    git clone -b v${OSTICKET_VERSION} --depth 1 https://github.com/osTicket/osTicket.git && \
+    ls -hal && \
+    cd osTicket && \
+    php manage.php deploy --setup --git /data/upload && \
+    ls -hal /data/upload/ && \
+    cd .. && \
+    chown -R www-data:www-data /data/upload && \
+    # Hide setup
+    mv /data/upload/setup /data/upload/setup_hidden && \
+    chown -R root:root /data/upload/setup_hidden && \
+    chmod -R go= /data/upload/setup_hidden && \
     # Download languages packs
     wget -nv -O upload/include/i18n/fr.phar https://s3.amazonaws.com/downloads.osticket.com/lang/1.14.x/fr.phar && \
     wget -nv -O upload/include/i18n/ar.phar https://s3.amazonaws.com/downloads.osticket.com/lang/1.14.x/ar.phar && \
@@ -124,8 +115,7 @@ RUN set -x && \
     wget -nv -O upload/include/plugins/storage-fs.phar https://s3.amazonaws.com/downloads.osticket.com/plugin/storage-fs.phar && \
     wget -nv -O upload/include/plugins/storage-s3.phar https://s3.amazonaws.com/downloads.osticket.com/plugin/storage-s3.phar && \
     wget -nv -O upload/include/plugins/audit.phar https://s3.amazonaws.com/downloads.osticket.com/plugin/audit.phar && \
-    
-    # Download community plugins
+    # Download community plugins (https://forum.osticket.com/d/92286-resources-for-osticket)
     ## Archiver
     git clone https://github.com/clonemeagain/osticket-plugin-archiver upload/include/plugins/archiver && \
     ## Attachment Preview
@@ -150,15 +140,17 @@ RUN set -x && \
     git clone https://github.com/clonemeagain/osticket-slack upload/include/plugins/slack && \
     ## Teams (Microsoft)
     git clone https://github.com/ipavlovi/osTicket-Microsoft-Teams-plugin upload/include/plugins/teams && \
-    
     # Create msmtp log
     touch /var/log/msmtp.log && \
     chown www-data:www-data /var/log/msmtp.log && \
     # File upload permissions
     mkdir -p /var/tmp/nginx && \
-    chown nginx:www-data /var/tmp/nginx && chmod g+rx /var/tmp/nginx
+    chown nginx:www-data /var/tmp/nginx && chmod g+rx /var/tmp/nginx && \
+    # Cleanup
+    rm -rf /data/osTicket && \
+    rm -rf /var/cache/apk/* && \
+    apk del .build-deps
 COPY files/ /
-RUN chmod +x /data/bin/start.sh
 VOLUME ["/data/upload/include/plugins","/data/upload/include/i18n","/var/log/nginx"]
 EXPOSE 80
 CMD ["/data/bin/start.sh"]
