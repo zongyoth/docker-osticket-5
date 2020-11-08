@@ -148,6 +148,7 @@ RUN set -x && \
     chown nginx:www-data /var/tmp/nginx && chmod g+rx /var/tmp/nginx && \
     # Cleanup
     rm -rf /data/osTicket && \
+    find . \( -name ".git" -o -name ".gitignore" -o -name ".gitmodules" -o -name ".gitattributes" \) -exec rm -rf -- {} + && \
     rm -rf /var/cache/apk/* && \
     apk del .build-deps
 COPY files/ /

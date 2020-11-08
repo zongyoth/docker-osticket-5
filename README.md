@@ -247,8 +247,11 @@ Password to use for automatically created administrative user. Defaults to 'Admi
 
 # Docker secrets and passwords from files
 
-The following environmental variables can be set to filepaths inside the container:
+Instead of the environment variables with clear text passwords the following variables can be set to file paths inside 
+the container to load passwords from these:
+
 `MYSQL_PASSWORD_FILE`, `INSTALL_SECRET_FILE`, `ADMIN_PASSWORD_FILE`, `SMTP_PASSWORD_FILE`
+
 This allows docker secrets where passwords are mounted under `/run/secrets/mydockersecretname`.
 
 A working example with external docker secret for docker swarm can be found in `docker-compose-swarm.yml` in the github repo.
