@@ -7,15 +7,14 @@ Docker image for running version 1.14.3 of [OSTicket](http://osticket.com/).
 
 This image has been created from the original docker-osticket image by [Petter A. Helset](mailto:petter@helset.eu).
 
-It has a few modifications:
+# Features
 
-  * Documentation added, hurray!
-  * Base OS image fixed to Alpine Linux
-  * AJAX issues fixed that made original image unusable
-  * Now designed to work with a linked [MySQL](https://registry.hub.docker.com/u/library/mysql/) docker container.
+  * Based on Alpine Linux
+  * Works with linked [MySQL](https://registry.hub.docker.com/u/library/mysql/) docker container.
   * Automates configuration file & database installation
   * EMail support
   * Support for docker secrets
+  * Comes with almost all available plugins and languages
 
 OSTicket is being served by [nginx](http://wiki.nginx.org/Main) using [PHP-FPM](http://php-fpm.org/) with PHP 7.2.
 PHP7's [mail](http://php.net/manual/en/function.mail.php) function is configured to use [msmtp](http://msmtp.sourceforge.net/) to send out-going messages.
