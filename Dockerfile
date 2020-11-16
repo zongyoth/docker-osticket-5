@@ -3,8 +3,11 @@ MAINTAINER Martin Campbell <martin@campbellsoftware.co.uk>
 # environment for osticket
 ENV OSTICKET_VERSION=1.14.3
 ENV HOME=/data
+ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
 WORKDIR /data
 RUN set -x && \
+    # Fix iconv bug (empty body when mail encoded in quoted-printable)
+    apk add gnu-libiconv --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --allow-untrusted && \
     # requirements and PHP extensions
     apk add --no-cache --update \
         wget \
