@@ -22,7 +22,7 @@ services:
       MYSQL_USER: osticket
       MYSQL_PASSWORD: osticketsecret
       # Change to en_US or comment out for default language
-      LANGUAGE: de_DE
+      LANGUAGE: en_US
       INSTALL_SECRET: mysecret897j98uemlrk09eums09duskd9jpsrds
       ADMIN_PASSWORD: osticketsecret
       # SMTP_HOST: mymailserver.com
